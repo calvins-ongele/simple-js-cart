@@ -6,9 +6,10 @@
             const totalInCart = data.total; 
             document.querySelector('.cart-numbers').textContent = totalInCart;
         })
-    </script>
+    <\/script>
 
-/***
+*****/
+
 
 class Cart {
     constructor(name) {
@@ -23,7 +24,7 @@ class Cart {
             this.setCookie(cookie_id, 14);
          
             return { total:0, cart:[]  } // no need to throw error, perhaps no 'add to cart' button been pressed
-        }
+        } 
         const response = await fetch("/myapp/fetch-cart", {
             method:"POST", body:JSON.stringify({cookie_id})
         });
@@ -33,7 +34,7 @@ class Cart {
         return cart;
     }
     //# 2. send new/update cart data to backend  ... returns {total:count, cart:data}
-    async send(item_id) {
+    async send(item_id, qty = 1, checkout = 0) {
         
         let cookie_id = this.getCookie;
         
@@ -44,7 +45,7 @@ class Cart {
 
         const response = await fetch("/myapp/save-cart", {
             method:"POST", body:JSON.stringify({
-                cookie_id, item_id
+                cookie_id, item_id, qty, checkout
             })
         });
 
