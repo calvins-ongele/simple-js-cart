@@ -47,10 +47,11 @@ class MyApp {
 		);
 	 * 
 	 * 
-	 */
-	public function fetchcart(){ 
+	 */ 
+	public function fetchcart($id = ''){ 
 		// clean post data
-		$cookieId = CustomFunctions::cleanInput($_POST['cookie_id'], 'string');
+		$post = json_decode(file_get_contents("php://input"),1);
+		$cookieId = CustomFunctions::cleanInput($post['cookie_id']??$_POST['cookie_id']??$id??'', 'string');
 
 		// own data fetch way
 		$data = $this->_get('cart', 'cookie_id', [ $cookieId ]);
@@ -61,22 +62,26 @@ class MyApp {
 	} 
 	public function savecart(){ 
 		// clean post data
-		$cookieId = CustomFunctions::cleanInput($_POST['cookie_id'], 'string');
+		$post = json_decode(file_get_contents("php://input"),1);
+		$cookieId = CustomFunctions::cleanInput($post['cookie_id']??$_POST['cookie_id']??'', 'string');
+		$itemId = $post['item_id']??$_POST['item_id']??'';
 
-		if (!is_numeric($_POST['item_id'] )){
+		if (!is_numeric($itemId )){
 			die(json_encode(['error'=>true, 'msg'=>'Invalid Item ID']));
 		}
 
-		$data = $this->_get('cart', 'cookie_id,item_id', [$cookieId, $_POST['item_id']], 0);
+		$data = $this->_get('cart', 'cookie_id,item_id', [$cookieId, $itemId], 0);
 
 		if ($data[0] > 0) {
 			//update count
-			$this->_update("cart", 'item_count', 'cookie_id,item_id', [$data[1]['item_count']+1, $cookieId, $_POST['item_id']] );
+			$this->_update("cart", 'item_count', 'cookie_id,item_id', [$data[1]['item_count']+1, $cookieId, $itemId] );
 		} else {
-			$this->_insert("cart", 'item_count, cookie_id,item_id', [1, $cookieId, $_POST['item_id']] );
+			$this->_insert("cart", 'item_count, cookie_id,item_id', [1, $cookieId, $itemId] );
 		}
 
 		$this->fetchcart();
 	} 
+         
+
 
 }
