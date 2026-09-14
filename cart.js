@@ -1,42 +1,10 @@
-/******
-//usage/calling outside a function
-  <script>
-        const cart = new Cart('cart_id'); 
-
-        cart.get().then(data => { 
-            const totalInCart = data.total; 
-            updateNumbers(totalInCart);
-        });
-
-        // add to cart btn pressed
-        //quantity
-        const addToCart = document.querySelector('button[name="add-to-cart"]');
-        addToCart.addEventListener('click', async (e)=> {
-            e.preventDefault();
-            
-            const qty = document.querySelector('#quantity').value; 
-            const send = await cart.send(item_id, qty); 
-            updateNumbers(send.total);
-        });
-
-        function updateNumbers(numbersIncart) {
-            document.querySelectorAll('.cart-numbers sup').forEach((element)=>{
-                element.textContent = numbersIncart;
-            });
-        }
-
-    <\/script>
-
-*****/
-
-
 class Cart {
     constructor(name) {
         this.name = name;
     }
-    //# 1. retries cart data from backend  ... returns {total:count, cart:data}
+    //#.1. retries cart data from backend  ... returns {total:count, cart:data}
     async get() {
-        let cookie_id = this.getCookie; 
+        let cookie_id = this.getCookie(); 
         
         if (cookie_id.length === 0){ //set it if it doesnt exist
             cookie_id = this.generateRandomString();
@@ -55,7 +23,7 @@ class Cart {
     //# 2. send new/update cart data to backend  ... returns {total:count, cart:data}
     async send(item_id, qty = 1, checkout = 0) {
         
-        let cookie_id = this.getCookie;
+        let cookie_id = this.getCookie();
         
         if (cookie_id.length === 0){ //set it if it doesnt exist
             cookie_id = this.generateRandomString();
@@ -72,7 +40,7 @@ class Cart {
 
         return cart;
     }
-    // #3. Set a cookie (default expires in 7 days)
+    // ##3. Set a cookie (default expires in 7 days)
     setCookie(value, days = 7) {
         const date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -93,12 +61,13 @@ class Cart {
         return '';
     }
 
-    // #5. Delete a cookie  
+    // #..5. Delete a cookie  
     deleteCookie() {
         document.cookie = `${encodeURIComponent(this.name)}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
     }
 
     //# 6. generate cookie id
+    /*
     generateRandomString(length = 10) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let result = '';
@@ -109,5 +78,15 @@ class Cart {
         }
         
         return result;
+    }*/
+
+    generateRandomString(length = 16) {
+        const bytes = new Uint8Array(length);
+        crypto.getRandomValues(bytes);
+
+        return Array.from(bytes, byte =>
+            byte.toString(36).padStart(2, '0')
+        ).join('').slice(0, length);
     }
+
 }
