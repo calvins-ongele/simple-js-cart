@@ -2,20 +2,30 @@
     <script>
         const cart = new Cart('cart_id'); 
 
+        const cartTable = document.querySelector("#cartTable");
+
         cart.get().then(data => { 
             const totalInCart = data.total; 
             updateNumbers(totalInCart);
-        });
 
+            const pathname = location.pathname;
+            if (pathname === "/cart/" || pathname === "/cart") {
+                //sample
+                //{"total":1,"cart":[{"item_id":3,"cookie_id":"1l6p2u0a1c3p0b1j","item_count":4,"created_at":"2026-09-14 20:45:08","updated_at":"2026-09-14 20:54:02"}]}
+ 
+            }
+
+        });
+   
         // add to cart btn pressed | product details page
         const addToCart = document.querySelector('button[name="add-to-cart"]');
-        addToCart.addEventListener('click', async (e)=> {
+        addToCart?.addEventListener('click', async (e)=> {
             e.preventDefault();
             const item_id = addToCart.getAttribute('rel'); 
             const qty = document.querySelector('#quantity').value; 
             const send = await cart.send(item_id, qty); 
 
-            alert("Item added to cart successfully");
+            showErrorToast("Item added to cart successfully", true);
             updateNumbers(send.total);
         });
 
@@ -24,6 +34,41 @@
                 element.textContent = numbersIncart;
             });
         }
+
+        cartTable?.addEventListener('click', (event)=> { 
+            //remove products
+            if (event.target && event.target.classList.contains('remove')) { 
+                const item_id = event.target.getAttribute('rel');
+
+                if (confirm("Are you sure?")) {
+                    cart.send(item_id, 0);
+                    showErrorToast("Item added to cart successfully", true);
+                    setTimeout(() => { location.reload(); }, 3000); //or remove the table.row
+                }
+                return;
+            } 
+        });
+
+        const cartqty = document.querySelectorAll('.cart-qty');
+        cartqty?.forEach(input => {
+            input.addEventListener('change', (event)=> {
+                const qty = event.target.value;
+                const item_id = event.target.getAttribute('rel');
+                const price = event.target.getAttribute('price');
+
+                const total = parseFloat(price) * parseFloat(qty);
+                 
+                const itemIdElement = document.querySelector(`#subtotal${item_id}`);
+                itemIdElement.textContent = `${total}`;
+
+                if (parseInt(qty) > 0) {
+                    cart.send(item_id, qty, 1);
+                    setTimeout(() => { location.reload(); }, 3000); //or remove the table.row
+                }
+
+                 
+            });
+        });
 
 
     </script>
