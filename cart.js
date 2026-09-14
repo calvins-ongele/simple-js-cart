@@ -4,7 +4,14 @@ class Cart {
     }
     //# 1. retries cart data from backend  ... returns {total:count, cart:data}
     async get() {
-        const cookie_id = this.getCookie;
+        let cookie_id = this.getCookie; 
+        
+        if (cookie_id.length === 0){ //set it if it doesnt exist
+            cookie_id = this.generateRandomString();
+            this.setCookie(cookie_id, 14);
+         
+            return { total:0, cart:[]  } // no need to throw error, perhaps no 'add to cart' button been pressed
+        }
         const response = await fetch("/myapp/fetch-cart", {
             method:"POST", body:JSON.stringify({cookie_id})
         });
@@ -16,7 +23,13 @@ class Cart {
     //# 2. send new/update cart data to backend  ... returns {total:count, cart:data}
     async send(item_id) {
         
-        const cookie_id = this.getCookie;
+        let cookie_id = this.getCookie;
+        
+        if (cookie_id.length === 0){ //set it if it doesnt exist
+            cookie_id = this.generateRandomString();
+            this.setCookie(cookie_id, 14);
+        }
+
         const response = await fetch("/myapp/save-cart", {
             method:"POST", body:JSON.stringify({
                 cookie_id, item_id
@@ -45,11 +58,24 @@ class Cart {
             return decodeURIComponent(c.substring(nameEQ.length, c.length));
             }
         }
-        return null;
+        return '';
     }
 
     // #5. Delete a cookie  
     deleteCookie() {
         document.cookie = `${encodeURIComponent(this.name)}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+    }
+
+    //# 6. generate cookie id
+    generateRandomString(length = 10) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const charactersLength = characters.length;
+        
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        
+        return result;
     }
 }
