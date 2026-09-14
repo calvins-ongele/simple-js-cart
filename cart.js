@@ -1,11 +1,30 @@
 /******
 //usage/calling outside a function
-<script>
+  <script>
         const cart = new Cart('cart_id'); 
-        cart.get().then(data => {
+
+        cart.get().then(data => { 
             const totalInCart = data.total; 
-            document.querySelector('.cart-numbers').textContent = totalInCart;
-        })
+            updateNumbers(totalInCart);
+        });
+
+        // add to cart btn pressed
+        //quantity
+        const addToCart = document.querySelector('button[name="add-to-cart"]');
+        addToCart.addEventListener('click', async (e)=> {
+            e.preventDefault();
+            
+            const qty = document.querySelector('#quantity').value; 
+            const send = await cart.send(item_id, qty); 
+            updateNumbers(send.total);
+        });
+
+        function updateNumbers(numbersIncart) {
+            document.querySelectorAll('.cart-numbers sup').forEach((element)=>{
+                element.textContent = numbersIncart;
+            });
+        }
+
     <\/script>
 
 *****/
