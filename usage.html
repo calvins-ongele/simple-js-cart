@@ -1,0 +1,29 @@
+ <script src="cart.js"></script>
+    <script>
+        const cart = new Cart('cart_id'); 
+
+        cart.get().then(data => { 
+            const totalInCart = data.total; 
+            updateNumbers(totalInCart);
+        });
+
+        // add to cart btn pressed | product details page
+        const addToCart = document.querySelector('button[name="add-to-cart"]');
+        addToCart.addEventListener('click', async (e)=> {
+            e.preventDefault();
+            const item_id = addToCart.getAttribute('rel'); 
+            const qty = document.querySelector('#quantity').value; 
+            const send = await cart.send(item_id, qty); 
+
+            alert("Item added to cart successfully");
+            updateNumbers(send.total);
+        });
+
+        function updateNumbers(numbersIncart) {
+            document.querySelectorAll('.cart-numbers sup').forEach((element)=>{
+                element.textContent = numbersIncart;
+            });
+        }
+
+
+    </script>
