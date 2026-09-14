@@ -1,3 +1,15 @@
+/******
+//usage/calling outside a function
+<script>
+        const cart = new Cart('cart_id'); 
+        cart.get().then(data => {
+            const totalInCart = data.total; 
+            document.querySelector('.cart-numbers').textContent = totalInCart;
+        })
+    </script>
+
+/***
+
 class Cart {
     constructor(name) {
         this.name = name;
